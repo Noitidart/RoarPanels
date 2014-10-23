@@ -36,8 +36,10 @@ function throwPop(msg, type) {
 			aDOMWindow.resizeTo(winWidth, divHeight + 10);
 			iframe.style.height = (divHeight + 10) + 'px';
 			//Services.wm.getMostRecentWindow('navigator:browser').setTimeout(function() { console.log('resizing IFRAME now'); iframe.style.height = (divHeight + 10) + 'px'; console.log('resizing IFRAME done'); }, 5000);
-			iframe.contentDocument.body.style.opacity = 1;
-			iframe.contentDocument.body.style.marginTop = 0;
+			//iframe.contentDocument.body.style.opacity = 1;
+			//iframe.contentDocument.body.style.marginTop = 0;
+			contentWindow.style.opacity = 1;
+			contentWindow.style.marginTop = 0;
 		}, false);
 		iframe.setAttribute('src', self.path + 'roar.htm');
 	}, false);
