@@ -15,8 +15,10 @@ XPCOMUtils.defineLazyGetter(myServices, 'as', function(){ return Cc['@mozilla.or
 
 var cActPops = []; //holds obj of {top:0, height:0} of the panels currently thrown //currentlyActivePopups
 
-function throwPop(msg, type) {
-	var winWidth = 315;
+var lastPop;
+var addToDivHeight = 10;
+var winWidth = 315;
+function throwPop(id, msg, type) {
 	var aDOMWindow = Services.ww.openWindow(null, self.path + 'roar.xul', '_blank', 'chrome,alwaysRaised,width=' + winWidth + ',height=50', null);
 	
 	//have to listen to iframe load because height is dynamic of div so i read the height of the div then set aDOMWindow height and iframe height based on that
@@ -33,8 +35,9 @@ function throwPop(msg, type) {
 			var divHeight = parseInt(iframe.contentWindow.getComputedStyle(div, null).getPropertyValue('height'));
 			console.log('divHeight:', divHeight);
 			//Services.wm.getMostRecentWindow('navigator:browser').setTimeout(function() { console.log('resizing now'); aDOMWindow.resizeTo(winWidth, divHeight + 10); console.log('resizing done'); }, 3000);
-			aDOMWindow.resizeTo(winWidth, divHeight + 10);
-			iframe.style.height = (divHeight + 10) + 'px';
+			lastPop = {aDOMWindow: aDOMWindow, contentWindow: contentWindow, iframe: iframe, divHeight: divHeight};
+			aDOMWindow.resizeTo(winWidth, divHeight + addToDivHeight);
+			iframe.style.height = (divHeight + addToDivHeight) + 'px';
 			//Services.wm.getMostRecentWindow('navigator:browser').setTimeout(function() { console.log('resizing IFRAME now'); iframe.style.height = (divHeight + 10) + 'px'; console.log('resizing IFRAME done'); }, 5000);
 			//iframe.contentDocument.body.style.opacity = 1;
 			//iframe.contentDocument.body.style.marginTop = 0;
@@ -45,6 +48,10 @@ function throwPop(msg, type) {
 	}, false);
 
 	console.log('aDOMWindow:', aDOMWindow);
+}
+
+function movePop() {
+	lastPop.aDOMWindow.resizeTo();
 }
 
 function startup(aData, aReason) {

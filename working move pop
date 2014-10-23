@@ -1,0 +1,46 @@
+var XPIScope = Cu.import('resource://gre/modules/addons/XPIProvider.jsm');
+var scope = XPIScope.XPIProvider.bootstrapScopes['RoarPanels@jetpack'];
+//scope.lastPop.aDOMWindow.close();
+//scope.lastPop.iframe.style.height = '50px'
+var screen = Services.appShell.hiddenDOMWindow.screen;
+
+var cWinTop = scope.lastPop.aDOMWindow.screenY;
+var cWinLeft = scope.lastPop.aDOMWindow.screenX;
+var newWinTop = 300;
+var newWinLeft = 300;
+
+if (cWinTop == newWinTop && cWinLeft == newWinLeft) {
+  console.error('allready at new position so dont do anything');
+} else {
+  scope.lastPop.aDOMWindow.moveTo(0, 0);
+  scope.lastPop.aDOMWindow.resizeTo(screen.width, screen.height);
+
+  //without anim make contentWindow keep same position by using margin
+  scope.lastPop.contentWindow.setAttribute('left', cWinLeft);
+  scope.lastPop.contentWindow.setAttribute('top', cWinTop);
+
+  //set up finalize function
+  scope.lastPop.contentWindow.addEventListener('transitionend', function() {
+    scope.lastPop.contentWindow.removeEventListener('transitionend', arguments.callee, false);
+    //shrink aDOMWindow
+    var oldIframeHeight = scope.lastPop.iframe.style.height;
+    scope.lastPop.iframe.style.height = '0'; //this is not working
+    scope.lastPop.iframe.ownerDocument.defaultView.getComputedStyle(scope.lastPop.iframe, null).getPropertyValue('height'); //hack to make the height of 0 take
+    scope.lastPop.aDOMWindow.resizeTo(scope.winWidth, scope.lastPop.divHeight + scope.addToDivHeight);
+    scope.lastPop.iframe.style.height = oldIframeHeight;
+    scope.lastPop.aDOMWindow.moveTo(newWinLeft, newWinTop);
+
+    var oldTransition = scope.lastPop.contentWindow.style.transition;
+    scope.lastPop.contentWindow.style.transition = '';
+    //finalize position of contentWindow with no anim
+    scope.lastPop.contentWindow.style.marginTop = '';
+    scope.lastPop.contentWindow.style.marginLeft = '';
+  scope.lastPop.contentWindow.removeAttribute('left');
+  scope.lastPop.contentWindow.removeAttribute('top');
+
+  }, false);
+
+  //move to new pos
+  scope.lastPop.contentWindow.style.marginTop = newWinTop + 'px';
+  scope.lastPop.contentWindow.style.marginLeft = newWinLeft + 'px';
+}
