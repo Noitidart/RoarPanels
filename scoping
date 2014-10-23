@@ -1,0 +1,5 @@
+var XPIScope = Cu.import('resource://gre/modules/addons/XPIProvider.jsm');
+var scope = XPIScope.XPIProvider.bootstrapScopes['RoarPanels@jetpack'];
+//scope.lastPop.aDOMWindow.close();
+//scope.lastPop.iframe.style.height = '50px'
+scope.throwPop(['unrelated'], 'msg', 'type');
