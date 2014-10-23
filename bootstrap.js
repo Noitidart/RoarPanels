@@ -17,10 +17,9 @@ var cActPops = []; //holds obj of {top:0, height:0} of the panels currently thro
 
 function throwPop(msg, type) {
 	var winWidth = 315;
-	var msgIsHowManyRows = 0;
-	var heightOfTextRow = 14;
-	var heightOfDiv = 78 + ((msgIsHowManyRows-1) * heightOfTextRow)
-	var aDOMWindow = Services.ww.openWindow(null, self.path + 'roar.xul', '_blank', 'chrome,alwaysRaised,width=' + winWidth + ',height=' + heightOfDiv, null);
+	var aDOMWindow = Services.ww.openWindow(null, self.path + 'roar.xul', '_blank', 'chrome,alwaysRaised,width=' + winWidth + ',height=50', null);
+	
+	//have to listen to iframe load because height is dynamic of div so i read the height of the div then set aDOMWindow height and iframe height based on that
 	
 	aDOMWindow.addEventListener('load', function(e) {
 		console.log('aDOMWindow loaded');
@@ -33,9 +32,10 @@ function throwPop(msg, type) {
 			var div = iframe.contentDocument.querySelector('.roar-body');
 			var divHeight = parseInt(iframe.contentWindow.getComputedStyle(div, null).getPropertyValue('height'));
 			console.log('divHeight:', divHeight);
-			Services.wm.getMostRecentWindow('navigator:browser').setTimeout(function() { console.log('resizing now'); aDOMWindow.resizeTo(winWidth, divHeight + 10); console.log('resizing done'); }, 3000);
-			
-			Services.wm.getMostRecentWindow('navigator:browser').setTimeout(function() { console.log('resizing IFRAME now'); iframe.style.height = (divHeight + 10) + 'px'; console.log('resizing IFRAME done'); }, 5000);
+			//Services.wm.getMostRecentWindow('navigator:browser').setTimeout(function() { console.log('resizing now'); aDOMWindow.resizeTo(winWidth, divHeight + 10); console.log('resizing done'); }, 3000);
+			aDOMWindow.resizeTo(winWidth, divHeight + 10);
+			iframe.style.height = (divHeight + 10) + 'px';
+			//Services.wm.getMostRecentWindow('navigator:browser').setTimeout(function() { console.log('resizing IFRAME now'); iframe.style.height = (divHeight + 10) + 'px'; console.log('resizing IFRAME done'); }, 5000);
 		}, false);
 		iframe.setAttribute('src', self.path + 'roar.htm');
 	}, false);
