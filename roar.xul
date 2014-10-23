@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+		xmlns:html="http://www.w3.org/1999/xhtml"
+        hidechrome="true"
+        style="background-color: rgba(0, 0, 0, 0.1);"
+        ondblclick="window.close();">
+		<html:iframe src="chrome://roarpanels/content/roar.htm" style="border:0;"></html:iframe>
+</window>
