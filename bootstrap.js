@@ -16,15 +16,36 @@ XPCOMUtils.defineLazyGetter(myServices, 'as', function(){ return Cc['@mozilla.or
 var cActPops = []; //holds obj of {top:0, height:0} of the panels currently thrown //currentlyActivePopups
 
 function throwPop(msg, type) {
-	var msgIsHowManyRows = 3;
+	var winWidth = 315;
+	var msgIsHowManyRows = 0;
 	var heightOfTextRow = 14;
 	var heightOfDiv = 78 + ((msgIsHowManyRows-1) * heightOfTextRow)
-	Services.ww.openWindow(null, self.path + 'roar.xul', '_blank', 'chrome,alwaysRaised,width=315,height=' + heightOfDiv, null);
+	var aDOMWindow = Services.ww.openWindow(null, self.path + 'roar.xul', '_blank', 'chrome,alwaysRaised,width=' + winWidth + ',height=' + heightOfDiv, null);
+	
+	aDOMWindow.addEventListener('load', function(e) {
+		console.log('aDOMWindow loaded');
+		var contentWindow = aDOMWindow.document.childNodes[0];
+		console.log('contentWindow:', contentWindow);
+		var iframe = contentWindow.childNodes[0];
+		console.log('iframe:', iframe);
+		iframe.addEventListener('DOMContentLoaded', function() {
+			console.log('iframe loaded');
+			var div = iframe.contentDocument.querySelector('.roar-body');
+			var divHeight = parseInt(iframe.contentWindow.getComputedStyle(div, null).getPropertyValue('height'));
+			console.log('divHeight:', divHeight);
+			Services.wm.getMostRecentWindow('navigator:browser').setTimeout(function() { console.log('resizing now'); aDOMWindow.resizeTo(winWidth, divHeight + 10); console.log('resizing done'); }, 3000);
+			
+			Services.wm.getMostRecentWindow('navigator:browser').setTimeout(function() { console.log('resizing IFRAME now'); iframe.style.height = (divHeight + 10) + 'px'; console.log('resizing IFRAME done'); }, 5000);
+		}, false);
+		iframe.setAttribute('src', self.path + 'roar.htm');
+	}, false);
+
+	console.log('aDOMWindow:', aDOMWindow);
 }
 
 function startup(aData, aReason) {
 	self.aData = aData;
-	console.log('started');
+	throwPop('msg', 'type');
 }
 
 function shutdown(aData, aReason) {
