@@ -204,7 +204,7 @@ function removePopById(id) {
 				//movePopById(cActPops[j].ID, aDOMWinT, aDOMWinL);
 				//move pops after this remd pop
 				var nextPop = cActPops[j];
-				if (remdI == 0) { //test to see if it was the top right most (first) pop that was removed //can do test of `remdDomWinT == primaryScreenRect.top && remdDomWinL == primaryScreenRect.left + primaryScreenRect.width - winWidth`
+				if (remdI == 0 && j == 0) { //test to see if it was the top right most (first) pop that was removed //can do test of `remdDomWinT == primaryScreenRect.top && remdDomWinL == primaryScreenRect.left + primaryScreenRect.width - winWidth`
 					var aDOMWinL = primaryScreenRect.left + primaryScreenRect.width - winWidth; //this can just be remdDomWinL
 					var aDOMWinT = primaryScreenRect.top; //this can be just remdDomWinT
 				} else {
