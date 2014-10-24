@@ -16,7 +16,7 @@ XPCOMUtils.defineLazyGetter(myServices, 'as', function(){ return Cc['@mozilla.or
 var cActPops = []; //holds obj of {top:0, height:0} of the panels currently thrown //currentlyActivePopups
 
 var addToDivHeight = 10;
-var winWidth = 315;
+var winWidth = -1;
 var offsetDivLeft = 10;
 
 var sm = Cc['@mozilla.org/gfx/screenmanager;1'].getService(Ci.nsIScreenManager);
@@ -61,6 +61,10 @@ console.log('primaryScreenRect:', primaryScreenRect);
 			console.log('iframe loaded');
 			var div = iframe.contentDocument.querySelector('.roar-body');
 			var divHeight = parseInt(iframe.contentWindow.getComputedStyle(div, null).getPropertyValue('height'));
+			if (winWidth == -1) {
+				winWidth = parseInt(iframe.contentWindow.getComputedStyle(div, null).getPropertyValue('width')) + 7;
+				console.log('winWidth defined as:', winWidth);
+			}
 			console.log('divHeight:', divHeight);
 			//Services.wm.getMostRecentWindow('navigator:browser').setTimeout(function() { console.log('resizing now'); aDOMWindow.resizeTo(winWidth, divHeight + 10); console.log('resizing done'); }, 3000);
 			aDOMWindow.resizeTo(winWidth, divHeight + addToDivHeight);
@@ -132,7 +136,9 @@ function movePopById(id, newWinL, newWinT) {
 	  thePop.aDOMWindow.resizeTo(primaryScreenRect.left + primaryScreenRect.width, primaryScreenRect.top + primaryScreenRect.height);
 
 	  //set up finalize function
-	  thePop.xulChildWindow.addEventListener('transitionend', function() {
+	  thePop.xulChildWindow.addEventListener('transitionend', function(e) {
+		console.log('transition ended, now resizing window');
+		//e.stopPropagation();
 		thePop.xulChildWindow.removeEventListener('transitionend', arguments.callee, false);
 		//shrink aDOMWindow
 		
@@ -151,7 +157,7 @@ function movePopById(id, newWinL, newWinT) {
 		thePop.xulChildWindow.removeAttribute('left');
 		thePop.xulChildWindow.removeAttribute('top');
 		thePop.aDOMWindow.setTimeout(function() {
-			thePop.iframe.style.transition = oldTransition;
+			thePop.xulChildWindow.style.transition = oldTransition;
 		}, 100);
 	  }, false);
 
